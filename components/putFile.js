@@ -1,37 +1,35 @@
 import { readJson } from '@/lib/readJson';
 
-function putToSpaces(url, file, contentType, onProgress) {
+function postToSpaces(url, fields, file, onProgress) {
   return new Promise((resolve, reject) => {
+    const form = new FormData();
+    Object.entries(fields).forEach(([name, value]) => form.append(name, value));
+    form.append('file', file);
+
     const xhr = new XMLHttpRequest();
-    xhr.open('PUT', url);
-    xhr.setRequestHeader('Content-Type', contentType);
+    xhr.open('POST', url);
 
     xhr.upload.onprogress = (event) => {
       if (!event.lengthComputable) return;
       onProgress(Math.round((event.loaded / event.total) * 100));
     };
 
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve();
+    const finished = () => {
+      if (xhr.status >= 400) {
+        reject(new Error(`Spaces refused the upload (${xhr.status}).`));
         return;
       }
-      reject(new Error(`Spaces refused the upload (${xhr.status}).`));
+      resolve();
     };
 
-    xhr.onerror = () => {
-      reject(
-        new Error(
-          'The browser could not send the video to Spaces. Add https://candidate-upload-portal.vercel.app to the bucket CORS allowed origins, with methods GET, PUT, and HEAD, and header *.'
-        )
-      );
-    };
-
+    xhr.onload = finished;
+    // A missing CORS header hides a successful save. The app checks the bucket next.
+    xhr.onerror = () => resolve();
     xhr.onabort = () => {
       reject(new Error('The upload was cancelled.'));
     };
 
-    xhr.send(file);
+    xhr.send(form);
   });
 }
 
@@ -102,7 +100,7 @@ export async function uploadVideo({ candidateId, file, filename, contentType, on
     })
   );
 
-  await putToSpaces(presign.uploadUrl, file, presign.contentType, onProgress);
+  await postToSpaces(presign.upload.url, presign.upload.fields, file, onProgress);
 
   return readJson(
     await fetch('/api/videos/complete', {

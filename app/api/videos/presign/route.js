@@ -3,7 +3,7 @@ import { normalizeCandidateId } from '@/lib/candidateId';
 import { maxUploadBytes } from '@/lib/config';
 import { checkVideo } from '@/lib/fileRules';
 import { fail, httpError, jsonOk, readBody } from '@/lib/http';
-import { buildStorageKey, createUploadUrl } from '@/lib/spaces';
+import { buildStorageKey, createUploadForm } from '@/lib/spaces';
 import { createVideoId } from '@/lib/videos';
 
 export const runtime = 'nodejs';
@@ -30,9 +30,10 @@ export async function POST(request) {
     }
 
     const storageKey = buildStorageKey(candidate.candidateId, videoId, checked.storageName);
-    const uploadUrl = await createUploadUrl({
+    const upload = await createUploadForm({
       storageKey,
       contentType: checked.contentType,
+      size: checked.size,
     });
 
     return jsonOk({
@@ -40,7 +41,7 @@ export async function POST(request) {
       candidateId: candidate.candidateId,
       filename: checked.filename,
       contentType: checked.contentType,
-      uploadUrl,
+      upload,
     });
   } catch (error) {
     return fail(error);
