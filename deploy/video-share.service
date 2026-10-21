@@ -1,0 +1,16 @@
+[Unit]
+Description=Video Share dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=video-share
+Group=video-share
+WorkingDirectory=/var/www/video-share
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

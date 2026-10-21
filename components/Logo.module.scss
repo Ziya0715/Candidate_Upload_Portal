@@ -1,0 +1,20 @@
+.mark,
+.large {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  background: var(--green);
+  color: white;
+}
+
+.mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.large {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+}

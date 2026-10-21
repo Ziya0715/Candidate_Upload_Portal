@@ -1,0 +1,132 @@
+.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--green);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover:not(:disabled) {
+    background: var(--green-dark);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(22, 156, 80, 0.35);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+  }
+}
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #b7dfc8;
+  background: white;
+  color: var(--green-dark);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover:not(:disabled) {
+    background: var(--green-soft);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(22, 156, 80, 0.35);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+  }
+}
+
+.danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #f0c1bd;
+  background: white;
+  color: var(--danger);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover:not(:disabled) {
+    background: var(--danger-soft);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(180, 35, 24, 0.28);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+  }
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+
+  span {
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+}
+
+.input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0 14px;
+  background: white;
+  color: var(--ink);
+  font-size: 16px;
+
+  &:focus {
+    outline: 3px solid rgba(22, 156, 80, 0.25);
+    border-color: var(--green);
+  }
+}
+
+.alert {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.success {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+}

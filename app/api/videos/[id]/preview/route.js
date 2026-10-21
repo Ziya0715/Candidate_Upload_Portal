@@ -1,0 +1,36 @@
+import { requireSession } from '@/lib/auth';
+import { normalizeCandidateId } from '@/lib/candidateId';
+import { fail, httpError, jsonOk } from '@/lib/http';
+import { createPlaybackUrl } from '@/lib/spaces';
+import { getVideo } from '@/lib/videos';
+
+export const runtime = 'nodejs';
+
+export async function GET(request, { params }) {
+  try {
+    await requireSession();
+    const { id } = await params;
+    const candidate = normalizeCandidateId(new URL(request.url).searchParams.get('candidateId'));
+    if (!candidate.ok) {
+      throw httpError(candidate.error);
+    }
+
+    const video = await getVideo(candidate.candidateId, id);
+    if (!video) {
+      throw httpError('That video is no longer in the list.', 404);
+    }
+
+    const url = await createPlaybackUrl({
+      storageKey: video.storageKey,
+      contentType: video.contentType,
+    });
+
+    return jsonOk({
+      filename: video.filename,
+      contentType: video.contentType,
+      url,
+    });
+  } catch (error) {
+    return fail(error);
+  }
+}

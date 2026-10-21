@@ -1,0 +1,166 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.heading {
+  display: grid;
+  gap: 4px;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  p {
+    color: var(--muted);
+  }
+}
+
+.zone {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 18px;
+  border: 2px dashed #9dcfb3;
+  border-radius: 16px;
+  background: #f7fcf9;
+  text-align: center;
+
+  strong {
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+}
+
+.dragging {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 18px;
+  border: 2px dashed var(--green);
+  border-radius: 16px;
+  background: var(--green-soft);
+  text-align: center;
+
+  strong {
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.status {
+  display: grid;
+  gap: 8px;
+}
+
+.status p {
+  margin: 0;
+  font-weight: 650;
+}
+
+.track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5f3eb;
+}
+
+.bar {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  border-radius: inherit;
+  transition: width 0.15s ease;
+}
+
+.queue {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.itemName {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.failed {
+  color: #9f2d2d;
+}
+
+.itemActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+
+  input {
+    flex: 1 1 220px;
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 16px;
+  }
+}
+
+.linkBox {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--green-soft);
+
+  span {
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 16px;
+  }
+}

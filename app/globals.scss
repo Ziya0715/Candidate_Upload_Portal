@@ -1,0 +1,49 @@
+:root {
+  --green: #169c50;
+  --green-dark: #0e7a3d;
+  --green-soft: #e7f6ee;
+  --ink: #143024;
+  --muted: #5d6f64;
+  --line: #d7e8de;
+  --danger: #b42318;
+  --danger-soft: #fdeceb;
+  --page: #f3faf6;
+  --shadow: 0 12px 32px rgba(20, 48, 36, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  color: var(--ink);
+  background: var(--page);
+  line-height: 1.5;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: anywhere;
+}
+
+a {
+  color: var(--green-dark);
+}

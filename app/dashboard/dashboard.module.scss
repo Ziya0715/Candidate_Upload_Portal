@@ -1,0 +1,111 @@
+.page {
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 22px;
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  strong,
+  p {
+    margin: 0;
+  }
+
+  p {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span {
+    color: var(--muted);
+  }
+}
+
+.main {
+  width: min(960px, calc(100% - 32px));
+  margin: 28px auto 56px;
+  display: grid;
+  gap: 18px;
+}
+
+.notice {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #f0d48a;
+  border-radius: 12px;
+  background: #fff8e8;
+  color: #6a4b00;
+}
+
+.candidate {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  p {
+    color: var(--muted);
+  }
+}
+
+.candidateForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.candidateField {
+  flex: 1 1 240px;
+}
+
+.path {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.candidateBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .header,
+  .account,
+  .candidateBar,
+  .candidateForm {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
