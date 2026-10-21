@@ -10,7 +10,8 @@
     <MaxAgeSeconds>3000</MaxAgeSeconds>
   </CORSRule>
   <CORSRule>
-    <AllowedOrigin>https://videos.example.com</AllowedOrigin>
+    <AllowedOrigin>https://candidate-upload-portal.vercel.app</AllowedOrigin>
+    <AllowedOrigin>https://*.vercel.app</AllowedOrigin>
     <AllowedMethod>GET</AllowedMethod>
     <AllowedMethod>PUT</AllowedMethod>
     <AllowedMethod>HEAD</AllowedMethod>
