@@ -1,63 +1,12 @@
 import { readJson } from '@/lib/readJson';
 
-function postToSpaces(url, fields, file) {
-  return new Promise((resolve, reject) => {
-    const iframe = document.createElement('iframe');
-    iframe.name = `spaces-upload-${Date.now()}`;
-    iframe.hidden = true;
-    iframe.setAttribute('aria-hidden', 'true');
+async function postToSpaces(url, fields, file) {
+  const form = new FormData();
+  Object.entries(fields).forEach(([name, value]) => form.append(name, value));
+  form.append('file', file);
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = url;
-    form.enctype = 'multipart/form-data';
-    form.target = iframe.name;
-    form.hidden = true;
-
-    Object.entries(fields).forEach(([name, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    });
-
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.name = 'file';
-    const transfer = new DataTransfer();
-    transfer.items.add(file);
-    fileInput.files = transfer.files;
-    form.appendChild(fileInput);
-
-    let finished = false;
-    const cleanup = () => {
-      form.remove();
-      iframe.remove();
-    };
-    const done = () => {
-      if (finished) return;
-      finished = true;
-      cleanup();
-      resolve();
-    };
-
-    // The first load is the empty frame. The next load is Spaces accepting the file.
-    iframe.addEventListener('load', () => {
-      iframe.onload = () => done();
-      form.submit();
-    });
-
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
-
-    window.setTimeout(() => {
-      if (finished) return;
-      finished = true;
-      cleanup();
-      reject(new Error('The upload took too long. Please try that video again.'));
-    }, 60 * 60 * 1000);
-  });
+  // no-cors lets the browser finish the save even when Spaces hides the reply.
+  await fetch(url, { method: 'POST', mode: 'no-cors', body: form });
 }
 
 function uploadThroughApp({ candidateId, file, filename, contentType, onProgress }) {
@@ -130,16 +79,30 @@ export async function uploadVideo({ candidateId, file, filename, contentType, on
   await postToSpaces(presign.upload.url, presign.upload.fields, file);
   onProgress(100);
 
-  return readJson(
-    await fetch('/api/videos/complete', {
+  const completeBody = {
+    candidateId: presign.candidateId,
+    videoId: presign.videoId,
+    filename: presign.filename,
+    size: file.size,
+  };
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const response = await fetch('/api/videos/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        candidateId: presign.candidateId,
-        videoId: presign.videoId,
-        filename: presign.filename,
-        size: file.size,
-      }),
-    })
-  );
+      body: JSON.stringify(completeBody),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.ok && data.video) return data;
+
+    const missing = response.status === 400 && String(data.error || '').includes('did not arrive');
+    if (!missing || attempt === 4) {
+      const error = new Error(data.error || 'The upload failed.');
+      error.status = response.status;
+      throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+
+  throw new Error('The upload failed.');
 }
