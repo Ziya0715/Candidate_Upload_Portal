@@ -130,6 +130,9 @@ export default function UploadPanel({ maxBytes, candidateId, onUploaded }) {
   function statusText() {
     const count =
       position.total > 1 ? `File ${position.current} of ${position.total}. ` : '';
+    if (phase === 'uploading' && progress === 0) {
+      return `${count}Uploading ${fileLabel}... please wait`;
+    }
     if (phase === 'uploading') return `${count}Uploading ${fileLabel}... ${progress}%`;
     return '';
   }

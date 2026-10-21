@@ -1,35 +1,62 @@
 import { readJson } from '@/lib/readJson';
 
-function postToSpaces(url, fields, file, onProgress) {
+function postToSpaces(url, fields, file) {
   return new Promise((resolve, reject) => {
-    const form = new FormData();
-    Object.entries(fields).forEach(([name, value]) => form.append(name, value));
-    form.append('file', file);
+    const iframe = document.createElement('iframe');
+    iframe.name = `spaces-upload-${Date.now()}`;
+    iframe.hidden = true;
+    iframe.setAttribute('aria-hidden', 'true');
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.enctype = 'multipart/form-data';
+    form.target = iframe.name;
+    form.hidden = true;
 
-    xhr.upload.onprogress = (event) => {
-      if (!event.lengthComputable) return;
-      onProgress(Math.round((event.loaded / event.total) * 100));
+    Object.entries(fields).forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.name = 'file';
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    fileInput.files = transfer.files;
+    form.appendChild(fileInput);
+
+    let finished = false;
+    const cleanup = () => {
+      form.remove();
+      iframe.remove();
     };
-
-    const finished = () => {
-      if (xhr.status >= 400) {
-        reject(new Error(`Spaces refused the upload (${xhr.status}).`));
-        return;
-      }
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      cleanup();
       resolve();
     };
 
-    xhr.onload = finished;
-    // A missing CORS header hides a successful save. The app checks the bucket next.
-    xhr.onerror = () => resolve();
-    xhr.onabort = () => {
-      reject(new Error('The upload was cancelled.'));
-    };
+    // The first load is the empty frame. The next load is Spaces accepting the file.
+    iframe.addEventListener('load', () => {
+      iframe.onload = () => done();
+      form.submit();
+    });
 
-    xhr.send(form);
+    document.body.appendChild(iframe);
+    document.body.appendChild(form);
+
+    window.setTimeout(() => {
+      if (finished) return;
+      finished = true;
+      cleanup();
+      reject(new Error('The upload took too long. Please try that video again.'));
+    }, 60 * 60 * 1000);
   });
 }
 
@@ -100,7 +127,8 @@ export async function uploadVideo({ candidateId, file, filename, contentType, on
     })
   );
 
-  await postToSpaces(presign.upload.url, presign.upload.fields, file, onProgress);
+  await postToSpaces(presign.upload.url, presign.upload.fields, file);
+  onProgress(100);
 
   return readJson(
     await fetch('/api/videos/complete', {
