@@ -19,11 +19,14 @@ export async function POST(request) {
   const key = clientKey(request);
 
   try {
-    const username = process.env.STAFF_USERNAME || '';
-    const password = process.env.STAFF_PASSWORD || '';
+    const username = (process.env.STAFF_USERNAME || '').trim();
+    const password = (process.env.STAFF_PASSWORD || '').trim();
 
     if (!username || !password) {
-      throw httpError('Set STAFF_USERNAME and STAFF_PASSWORD in .env.local.', 500);
+      throw httpError(
+        'Set STAFF_USERNAME and STAFF_PASSWORD, then redeploy. On Vercel add them in Project Settings, Environment Variables. .env.local is only used on your computer.',
+        500
+      );
     }
 
     if (process.env.NODE_ENV === 'production' && password === 'change-this-password') {

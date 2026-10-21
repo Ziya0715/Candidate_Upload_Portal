@@ -212,7 +212,18 @@ sudo ufw allow 'Nginx Full'
 sudo ufw enable
 ```
 
-## 7. Deploy with Docker
+## 7. Deploy on Vercel
+
+`.env.local` stays on your computer. Vercel does not upload it, so the live site has no username or password until you add the variables there.
+
+1. Open the Vercel project, then **Settings**, then **Environment Variables**.
+2. Add each name from `.env.example` with the same values you use locally: `STAFF_USERNAME`, `STAFF_PASSWORD`, `SESSION_SECRET`, and the five `DO_SPACES_*` values. Add `MAX_UPLOAD_MB` as `2048`.
+3. Enable them for **Production**.
+4. Open **Deployments** and redeploy the latest deployment. A new variable is not used until the site is deployed again.
+
+Sign in on the `https://` Vercel address with that same username and password.
+
+## 8. Deploy with Docker
 
 Build and run from this folder after `.env.local` is filled in:
 
