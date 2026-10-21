@@ -1,4 +1,5 @@
 import { secretsMatch } from '@/lib/auth';
+import { staffPassword, staffUsername } from '@/lib/defaults';
 import { fail, httpError, jsonOk, readBody } from '@/lib/http';
 import { clearLoginFailures, loginBlocked, recordLoginFailure } from '@/lib/loginAttempts';
 import { createSessionToken, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
@@ -19,15 +20,8 @@ export async function POST(request) {
   const key = clientKey(request);
 
   try {
-    const username = (process.env.STAFF_USERNAME || '').trim();
-    const password = (process.env.STAFF_PASSWORD || '').trim();
-
-    if (!username || !password) {
-      throw httpError(
-        'Set STAFF_USERNAME and STAFF_PASSWORD, then redeploy. On Vercel add them in Project Settings, Environment Variables. .env.local is only used on your computer.',
-        500
-      );
-    }
+    const username = staffUsername();
+    const password = staffPassword();
 
     if (process.env.NODE_ENV === 'production' && password === 'change-this-password') {
       throw httpError('Change STAFF_PASSWORD before running this app in production.', 500);
