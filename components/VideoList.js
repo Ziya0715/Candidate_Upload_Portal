@@ -20,7 +20,7 @@ function shareUrl(token) {
   return `${window.location.origin}/v/${token}`;
 }
 
-export default function VideoList({ videos, loading, error, onChange, candidateId }) {
+export default function VideoList({ videos, loading, error, onChange, candidateId, emptyText }) {
   const router = useRouter();
   const [copiedId, setCopiedId] = useState('');
   const [manualLink, setManualLink] = useState(null);
@@ -135,7 +135,7 @@ export default function VideoList({ videos, loading, error, onChange, candidateI
       ) : null}
 
       {!loading && videos.length === 0 ? (
-        <p className={styles.empty}>No videos for this candidate yet. Upload one above.</p>
+        <p className={styles.empty}>{emptyText || 'No videos for this candidate yet. Upload one above.'}</p>
       ) : null}
 
       <ul className={styles.list}>
