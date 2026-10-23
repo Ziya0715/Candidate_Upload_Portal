@@ -3,7 +3,7 @@ import { normalizeCandidateId } from '@/lib/candidateId';
 import { maxUploadBytes } from '@/lib/config';
 import { checkVideo } from '@/lib/fileRules';
 import { fail, httpError, jsonOk, readBody } from '@/lib/http';
-import { buildStorageKey, deleteStoredObject, statObject } from '@/lib/spaces';
+import { buildStorageKey, deleteStoredObject, setStoredContentType, statObject } from '@/lib/spaces';
 import { isVideoId, toPublicVideo, videoFromUpload } from '@/lib/videos';
 
 export const runtime = 'nodejs';
@@ -38,7 +38,7 @@ export async function POST(request) {
 
     if (!stored) {
       throw httpError(
-        'The file did not arrive in Spaces. Check the bucket CORS rules, then try the upload again.'
+        'The video did not finish saving. Please try the upload again.'
       );
     }
 
@@ -46,6 +46,8 @@ export async function POST(request) {
       await deleteStoredObject(storageKey);
       throw httpError('The uploaded file size did not match. Please try again.');
     }
+
+    await setStoredContentType(storageKey, checked.contentType);
 
     const video = videoFromUpload({
       storageKey,

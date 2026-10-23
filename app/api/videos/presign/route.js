@@ -32,7 +32,6 @@ export async function POST(request) {
     const storageKey = buildStorageKey(candidate.candidateId, videoId, checked.storageName);
     const upload = await createUploadForm({
       storageKey,
-      contentType: checked.contentType,
       size: checked.size,
     });
 

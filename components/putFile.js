@@ -95,7 +95,7 @@ export async function uploadVideo({ candidateId, file, filename, contentType, on
     const data = await response.json().catch(() => ({}));
     if (response.ok && data.video) return data;
 
-    const missing = response.status === 400 && String(data.error || '').includes('did not arrive');
+    const missing = response.status === 400 && String(data.error || '').includes('did not finish saving');
     if (!missing || attempt === 4) {
       const error = new Error(data.error || 'The upload failed.');
       error.status = response.status;
