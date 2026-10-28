@@ -87,7 +87,7 @@ function CardMenu({ task, busy, onMove, onAsk, onEdit, onSchedule }) {
     if (task.status !== 'completed' && task.status !== 'deleted') items.push({ label: 'Reschedule', run: () => onSchedule(task) });
     if (task.status === 'completed') items.push({ label: 'Reopen', run: () => onAsk(task, 'todo', 'reopen') });
     MOVES.forEach((move) => {
-      if (!canMove(task, move.id)) return;
+      if (move.id === 'pending' || !canMove(task, move.id)) return;
       items.push({ label: move.label, run: () => onMove(task, { status: move.id }) });
     });
     if (task.status !== 'hold') items.push({ label: 'Hold', run: () => onAsk(task, 'hold') });
