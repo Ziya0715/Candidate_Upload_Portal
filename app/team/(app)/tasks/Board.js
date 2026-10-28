@@ -19,7 +19,7 @@ const MOVES = [
   { id: 'completed', label: 'Completed' },
 ];
 const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 const EMPTY = { title: '', description: '', teamId: '', assignedTo: '', priority: 'medium', startDate: '', dueDate: '', dueTime: '', comment: '' };
 
 function openDate(value) {
@@ -410,10 +410,12 @@ export default function Board({ actor, mine }) {
                   return (
                     <article key={task.id} className={`${styles.task} ${styles[`pri${task.priority[0].toUpperCase()}${task.priority.slice(1)}`] || ''} ${task.overdue ? styles.overdue : ''}`}>
                       <button className={styles.taskBody} type="button" onClick={() => open(task.id)}>
-                        {actor.role === 'team_member' ? null : <span className={styles.who}>{task.assigneeName}</span>}
+                        <span className={styles.nameLine}>
+                          {actor.role === 'team_member' ? null : <span className={styles.who}>{task.assigneeName}</span>}
+                          <span className={styles.when}>{dueLabel(task) || 'No date'}</span>
+                        </span>
                         <span className={styles.taskLine}>
                           <strong>{task.title}</strong>
-                          <span className={styles.when}>{dueLabel(task) || 'No date'}</span>
                         </span>
                         <span className={styles.badges}>
                           <span className={`${styles.badge} ${task.priority === 'high' || task.priority === 'urgent' ? styles.high : ''}`}>{PRIORITY_LABELS[task.priority]}</span>
@@ -505,7 +507,7 @@ export default function Board({ actor, mine }) {
                 {detail.task.status === 'completed' ? (
                   <button className={ui.ghost} type="button" disabled={busy} onClick={() => ask(detail.task, 'todo', 'reopen')}>Reopen</button>
                 ) : null}
-                {MOVES.filter((item) => canMove(detail.task, item.id)).map((item) => (
+                {MOVES.filter((item) => item.id !== 'pending' && canMove(detail.task, item.id)).map((item) => (
                   <button key={item.id} className={ui.ghost} type="button" disabled={busy} onClick={() => saveTask(detail.task.id, { status: item.id })}>Move to {item.label}</button>
                 ))}
                 {detail.task.status !== 'hold' ? (
