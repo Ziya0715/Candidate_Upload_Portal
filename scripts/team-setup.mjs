@@ -4,7 +4,7 @@ import path from 'node:path';
 import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 
-const TEAMS = ['Video Editing Team', 'RA Team', 'Digital Marketing Team', 'Developer Team', 'Sales Team'];
+const TEAMS = ['Video Editing Team', 'RA Team', 'Digital Marketing Team', 'Developer Team', 'Sales Team', 'Placement Team'];
 
 function loadEnv() {
   const file = path.join(process.cwd(), '.env.local');
