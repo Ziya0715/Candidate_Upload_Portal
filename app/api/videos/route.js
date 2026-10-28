@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth';
+import { requireUploadDesk } from '@/lib/uploadGate';
 import { normalizeCandidateId } from '@/lib/candidateId';
 import { fail, httpError, jsonOk } from '@/lib/http';
 import { listVideos, toPublicVideo } from '@/lib/videos';
@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 
 export async function GET(request) {
   try {
-    await requireSession();
+    await requireUploadDesk();
     const candidateId = new URL(request.url).searchParams.get('candidateId');
     const checked = normalizeCandidateId(candidateId);
     if (!checked.ok) {

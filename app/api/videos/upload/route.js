@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth';
+import { requireUploadDesk } from '@/lib/uploadGate';
 import { normalizeCandidateId } from '@/lib/candidateId';
 import { maxUploadBytes } from '@/lib/config';
 import { checkVideo } from '@/lib/fileRules';
@@ -12,7 +12,7 @@ export async function POST(request) {
   let storageKey = '';
 
   try {
-    await requireSession();
+    await requireUploadDesk();
     const candidate = normalizeCandidateId(request.headers.get('x-candidate-id'));
     if (!candidate.ok) {
       throw httpError(candidate.error);

@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth';
+import { requireUploadDesk } from '@/lib/uploadGate';
 import { normalizeCandidateId } from '@/lib/candidateId';
 import { fail, httpError, jsonOk } from '@/lib/http';
 import { findCandidates, suggestCandidates } from '@/lib/sheet';
@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 
 export async function GET(request) {
   try {
-    await requireSession();
+    await requireUploadDesk();
     const url = new URL(request.url);
     const query = url.searchParams.get('q') || '';
     const suggest = url.searchParams.get('suggest') === '1';

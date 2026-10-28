@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth';
+import { requireUploadDesk } from '@/lib/uploadGate';
 import { normalizeCandidateId } from '@/lib/candidateId';
 import { fail, httpError, jsonOk } from '@/lib/http';
 import { createPlaybackUrl } from '@/lib/spaces';
@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 
 export async function GET(request, { params }) {
   try {
-    await requireSession();
+    await requireUploadDesk();
     const { id } = await params;
     const candidate = normalizeCandidateId(new URL(request.url).searchParams.get('candidateId'));
     if (!candidate.ok) {

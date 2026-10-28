@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth';
+import { requireUploadDesk } from '@/lib/uploadGate';
 import { normalizeCandidateId } from '@/lib/candidateId';
 import { maxUploadBytes } from '@/lib/config';
 import { checkVideo } from '@/lib/fileRules';
@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request) {
   try {
-    await requireSession();
+    await requireUploadDesk();
     const body = await readBody(request);
     const videoId = body?.videoId;
 

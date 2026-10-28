@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Logo from '@/components/Logo';
+import SideNav from '@/components/SideNav';
+import shell from '@/components/SideNav.module.scss';
 import UploadPanel from '@/components/UploadPanel';
 import VideoList from '@/components/VideoList';
 import { normalizeCandidateId } from '@/lib/candidateId';
@@ -198,23 +199,9 @@ export default function Dashboard({ username, maxBytes, spacesReady }) {
   const showUpload = firstUpload || (hasVideos && uploadOpen);
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.brand}>
-          <Logo />
-          <div>
-            <strong>Candidate's Video Upload</strong>
-            <p>Upload desk</p>
-          </div>
-        </div>
-        <div className={styles.account}>
-          <span>{username}</span>
-          <button className={ui.ghost} type="button" onClick={logout} disabled={signingOut}>
-            {signingOut ? 'Signing out...' : 'Log out'}
-          </button>
-        </div>
-      </header>
-
+    <div className={shell.shell}>
+      <SideNav username={username} signingOut={signingOut} onLogout={logout} />
+      <div className={shell.content}>
       <main className={styles.main}>
         {spacesReady ? null : (
           <p className={styles.notice}>
@@ -308,6 +295,7 @@ export default function Dashboard({ username, maxBytes, spacesReady }) {
           </p>
         ) : null}
       </main>
+      </div>
     </div>
   );
 }

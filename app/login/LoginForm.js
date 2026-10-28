@@ -21,14 +21,14 @@ export default function LoginForm() {
     setSubmitting(true);
 
     try {
-      await readJson(
+      const data = await readJson(
         await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ email: username, password }),
         })
       );
-      router.replace('/dashboard');
+      router.replace(data.redirect || '/dashboard');
       router.refresh();
     } catch (loginError) {
       setError(loginError.message);
@@ -40,15 +40,15 @@ export default function LoginForm() {
     <main className={styles.page}>
       <section className={styles.card}>
         <Logo large />
-        <h1>Video Share</h1>
-        <p>Staff sign in. People who open a share link do not need an account.</p>
+        <h1>Sign in</h1>
+        <p>Use your email and password. People who open a share link do not need an account.</p>
 
         <form className={styles.form} onSubmit={onSubmit}>
           <label className={ui.field}>
-            <span>Username</span>
+            <span>Email</span>
             <input
               className={ui.input}
-              name="username"
+              name="email"
               autoComplete="username"
               spellCheck={false}
               value={username}

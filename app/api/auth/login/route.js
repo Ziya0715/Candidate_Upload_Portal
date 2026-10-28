@@ -1,8 +1,12 @@
+import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import { secretsMatch } from '@/lib/auth';
 import { staffPassword, staffUsername } from '@/lib/defaults';
 import { fail, httpError, jsonOk, readBody } from '@/lib/http';
 import { clearLoginFailures, loginBlocked, recordLoginFailure } from '@/lib/loginAttempts';
 import { createSessionToken, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
+import { teamQuery } from '@/lib/team/db';
+import { createTeamToken, TEAM_COOKIE, teamCookieOptions } from '@/lib/team/session';
 
 export const runtime = 'nodejs';
 
@@ -14,6 +18,32 @@ function clientKey(request) {
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function teamLogin(email, password) {
+  try {
+    const recent = await teamQuery(
+      'SELECT COUNT(*) AS total FROM tm_login_attempts WHERE email = ? AND attempted_at > DATE_SUB(NOW(3), INTERVAL 10 MINUTE)',
+      [email]
+    );
+    if (Number(recent[0]?.total || 0) >= 8) return { limited: true };
+    const rows = await teamQuery('SELECT id, password_hash, is_active FROM tm_users WHERE email = ? LIMIT 1', [email]);
+    const user = rows[0];
+    if (!user) return { user: null };
+    if (!user.is_active) return { user, inactive: true };
+    const matches = await bcrypt.compare(password, user.password_hash);
+    return { user, matches };
+  } catch {
+    return null;
+  }
+}
+
+async function recordTeamFailure(email) {
+  try {
+    await teamQuery('INSERT INTO tm_login_attempts (id, email, attempted_at) VALUES (?,?,?)', [crypto.randomUUID(), email, new Date()]);
+  } catch {
+    // Staff login still works when the team database is unavailable.
+  }
 }
 
 export async function POST(request) {
@@ -32,33 +62,47 @@ export async function POST(request) {
     }
 
     const body = await readBody(request);
-    const givenUsername = body?.username;
+    const givenLogin = typeof body?.email === 'string' ? body.email : body?.username;
     const givenPassword = body?.password;
     const shapeIsValid =
-      typeof givenUsername === 'string' &&
+      typeof givenLogin === 'string' &&
       typeof givenPassword === 'string' &&
-      givenUsername.length > 0 &&
-      givenUsername.length <= 80 &&
+      givenLogin.trim().length > 0 &&
+      givenLogin.trim().length <= 190 &&
       givenPassword.length > 0 &&
       givenPassword.length <= 200;
+    const login = shapeIsValid ? givenLogin.trim() : '';
+    const email = login.toLowerCase();
 
-    const matches =
+    const staffMatches =
       shapeIsValid &&
-      secretsMatch(givenUsername, username) &&
+      login.length <= 80 &&
+      secretsMatch(login, username) &&
       secretsMatch(givenPassword, password);
+    const team = shapeIsValid ? await teamLogin(email, givenPassword) : null;
 
-    if (!matches) {
+    if (team?.limited && !staffMatches) {
+      throw httpError('Too many login attempts. Wait a few minutes and try again.', 429);
+    }
+
+    if (!staffMatches && !team?.matches) {
       await delay(500);
+      if (shapeIsValid) await recordTeamFailure(email);
       if (recordLoginFailure(key)) {
         throw httpError('Too many login attempts. Wait a few minutes and try again.', 429);
       }
-      throw httpError('Incorrect username or password.', 401);
+      throw httpError(team?.inactive ? 'This account is deactivated.' : 'Incorrect email or password.', 401);
     }
 
     clearLoginFailures(key);
-    const token = await createSessionToken(username);
-    const response = jsonOk({ ok: true });
-    response.cookies.set(SESSION_COOKIE, token, sessionCookieOptions(request.headers.get('host')));
+    const response = jsonOk({ ok: true, redirect: team?.matches ? '/team' : '/dashboard' });
+    const host = request.headers.get('host') || '';
+    if (team?.matches) {
+      response.cookies.set(TEAM_COOKIE, await createTeamToken(team.user.id), teamCookieOptions(host));
+    }
+    if (staffMatches) {
+      response.cookies.set(SESSION_COOKIE, await createSessionToken(username), sessionCookieOptions(host));
+    }
     return response;
   } catch (error) {
     return fail(error);

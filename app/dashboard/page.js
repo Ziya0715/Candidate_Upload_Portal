@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth';
 import { maxUploadBytes, spacesConfigured } from '@/lib/config';
+import { uploadDeskPageAccess } from '@/lib/uploadGate';
 import Dashboard from './Dashboard';
 
 export const dynamic = 'force-dynamic';
@@ -10,12 +10,13 @@ export const metadata = {
 };
 
 export default async function DashboardPage() {
-  const session = await getSession();
-  if (!session) redirect('/login');
+  const access = await uploadDeskPageAccess();
+  if (access?.denied) redirect('/team');
+  if (!access) redirect('/login');
 
   return (
     <Dashboard
-      username={session.username}
+      username={access.username}
       maxBytes={maxUploadBytes()}
       spacesReady={spacesConfigured()}
     />

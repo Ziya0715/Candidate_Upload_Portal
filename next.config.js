@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: ['mysql2', 'bcryptjs'],
   experimental: {
     // Staff videos are sent through this app, then on to Spaces.
     middlewareClientMaxBodySize: 5 * 1024 * 1024 * 1024,
