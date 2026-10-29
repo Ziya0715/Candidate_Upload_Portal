@@ -67,6 +67,22 @@ function RefreshButton({ label, busy, onClick }) {
   );
 }
 
+function byNearestDue(a, b) {
+  const aDate = String(a.dueDate || '').slice(0, 10);
+  const bDate = String(b.dueDate || '').slice(0, 10);
+  if (aDate !== bDate) {
+    if (!aDate) return 1;
+    if (!bDate) return -1;
+    return aDate < bDate ? -1 : 1;
+  }
+  const aTime = String(a.dueTime || '').slice(0, 5);
+  const bTime = String(b.dueTime || '').slice(0, 5);
+  if (aTime === bTime) return 0;
+  if (!aTime) return 1;
+  if (!bTime) return -1;
+  return aTime < bTime ? -1 : 1;
+}
+
 function dueMin() {
   return `${todayInKolkata()}T00:00`;
 }
@@ -132,7 +148,7 @@ export default function Board({ actor, mine }) {
   const [users, setUsers] = useState([]);
   const [assignees, setAssignees] = useState([]);
   const [pages, setPages] = useState({});
-  const [filters, setFilters] = useState({ q: '', status: '', priority: '', teamId: '', assigneeId: '', due: '', sort: 'created' });
+  const [filters, setFilters] = useState({ q: '', status: '', priority: '', teamId: '', assigneeId: '', due: '', sort: 'due' });
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [creating, setCreating] = useState(false);
@@ -392,6 +408,7 @@ export default function Board({ actor, mine }) {
         <div className={styles.board}>
           {COLUMNS.map((column) => {
             const cards = tasks.filter((task) => column.statuses.includes(task.status));
+            if (filters.sort === 'due') cards.sort(byNearestDue);
             const pageCount = Math.max(1, Math.ceil(cards.length / PAGE_SIZE));
             const page = Math.min(pages[column.id] || 1, pageCount);
             const pageCards = cards.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
