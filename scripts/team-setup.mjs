@@ -59,6 +59,27 @@ async function main() {
   if (!timeColumn.length) {
     await connection.query('ALTER TABLE tm_tasks ADD COLUMN due_time CHAR(5) NULL AFTER due_date');
   }
+  const [diaryDeleted] = await connection.query(
+    `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tm_diary' AND COLUMN_NAME = 'deleted_at'`
+  );
+  if (!diaryDeleted.length) {
+    await connection.query('ALTER TABLE tm_diary ADD COLUMN deleted_at DATETIME(3) NULL AFTER updated_at');
+  }
+  const [diaryReason] = await connection.query(
+    `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tm_diary' AND COLUMN_NAME = 'delete_reason'`
+  );
+  if (!diaryReason.length) {
+    await connection.query("ALTER TABLE tm_diary ADD COLUMN delete_reason VARCHAR(500) NOT NULL DEFAULT '' AFTER deleted_at");
+  }
+  const [diaryUnique] = await connection.query(
+    `SELECT INDEX_NAME FROM information_schema.STATISTICS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tm_diary' AND INDEX_NAME = 'uq_tm_diary_user_date'`
+  );
+  if (diaryUnique.length) {
+    await connection.query('ALTER TABLE tm_diary DROP INDEX uq_tm_diary_user_date');
+  }
   const now = new Date();
   for (const name of TEAMS) {
     const [existing] = await connection.query('SELECT id FROM tm_teams WHERE name = ? LIMIT 1', [name]);

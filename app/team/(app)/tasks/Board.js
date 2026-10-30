@@ -505,10 +505,16 @@ export default function Board({ actor, mine }) {
       ) : null}
       {detail ? (
         <div className={styles.modal}>
-          <div className={styles.dialog}>
-            <div className={styles.top}><h2>{detail.task.title}</h2><button className={ui.ghost} type="button" onClick={() => setDetail(null)}>Close</button></div>
-            <p>{actor.role === 'team_member' ? detail.task.teamName : `${detail.task.teamName} · ${detail.task.assigneeName}`} · {PRIORITY_LABELS[detail.task.priority]} · {STATUS_LABELS[detail.task.status]}{detail.task.overdue ? ' · Overdue' : ''}</p>
-            <p>{detail.task.description || 'No description.'}</p>
+          <div className={`${styles.dialog} ${styles.detailDialog}`}>
+            <div className={styles.dialogHead}>
+              <h2>{detail.task.title}</h2>
+              <button className={styles.close} type="button" aria-label="Close" onClick={() => setDetail(null)}>
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></svg>
+              </button>
+            </div>
+            <div className={styles.dialogScroll}>
+            <p className={styles.dialogMeta}>{actor.role === 'team_member' ? detail.task.teamName : `${detail.task.teamName} · ${detail.task.assigneeName}`} · {PRIORITY_LABELS[detail.task.priority]} · {STATUS_LABELS[detail.task.status]}{detail.task.overdue ? ' · Overdue' : ''}</p>
+            <p className={styles.dialogCopy}>{detail.task.description || 'No description.'}</p>
             <p className={styles.muted}>Due {dueLabel(detail.task) || 'not set'}{detail.task.completedAt ? ` · Completed ${detail.task.completedAt}` : ''}</p>
             {detail.task.holdReason ? <p>Hold reason: {detail.task.holdReason}</p> : null}
             {detail.task.deleteReason ? <p>Delete reason: {detail.task.deleteReason}</p> : null}
@@ -552,6 +558,7 @@ export default function Board({ actor, mine }) {
             </form>
             <h3>Activity</h3>
             {detail.activity.map((item) => <p key={item.id} className={styles.muted}>{item.user_name || 'System'} {item.action} {item.old_value} → {item.new_value}</p>)}
+            </div>
           </div>
         </div>
       ) : null}

@@ -16,6 +16,7 @@ function Nav({ actor }) {
     { href: '/team', label: 'Dashboard', exact: true },
     { href: '/team/tasks?mine=1', label: 'My Tasks', path: '/team/tasks', mine: true, roles: ['team_member'] },
     { href: '/team/tasks', label: actor.role === 'super_admin' ? 'Work Flow' : 'Team Tasks', path: '/team/tasks', roles: ['super_admin', 'team_leader'] },
+    { href: '/daily-diary', label: 'Notes' },
     { href: '/team/users', label: 'Users', roles: ['super_admin'] },
     // { href: '/team/reports', label: 'Reports', roles: ['super_admin', 'team_leader'] },
     { href: '/team/activity', label: 'Activity Logs' },

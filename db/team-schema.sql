@@ -85,6 +85,21 @@ CREATE TABLE IF NOT EXISTS tm_activity_logs (
   CONSTRAINT fk_tm_activity_user FOREIGN KEY (user_id) REFERENCES tm_users (id)
 );
 
+CREATE TABLE IF NOT EXISTS tm_diary (
+  id CHAR(36) NOT NULL,
+  user_id CHAR(36) NOT NULL,
+  entry_date DATE NOT NULL,
+  title VARCHAR(180) NOT NULL,
+  content TEXT NOT NULL,
+  created_at DATETIME(3) NOT NULL,
+  updated_at DATETIME(3) NOT NULL,
+  deleted_at DATETIME(3) NULL,
+  delete_reason VARCHAR(500) NOT NULL DEFAULT '',
+  PRIMARY KEY (id),
+  KEY idx_tm_diary_user (user_id, entry_date),
+  CONSTRAINT fk_tm_diary_user FOREIGN KEY (user_id) REFERENCES tm_users (id)
+);
+
 CREATE TABLE IF NOT EXISTS tm_login_attempts (
   id CHAR(36) NOT NULL,
   email VARCHAR(190) NOT NULL,
