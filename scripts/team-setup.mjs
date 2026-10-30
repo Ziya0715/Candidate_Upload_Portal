@@ -80,6 +80,13 @@ async function main() {
   if (diaryUnique.length) {
     await connection.query('ALTER TABLE tm_diary DROP INDEX uq_tm_diary_user_date');
   }
+  const [diaryTime] = await connection.query(
+    `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tm_diary' AND COLUMN_NAME = 'entry_time'`
+  );
+  if (!diaryTime.length) {
+    await connection.query('ALTER TABLE tm_diary ADD COLUMN entry_time CHAR(5) NULL AFTER entry_date');
+  }
   const now = new Date();
   for (const name of TEAMS) {
     const [existing] = await connection.query('SELECT id FROM tm_teams WHERE name = ? LIMIT 1', [name]);

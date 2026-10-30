@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS tm_diary (
   id CHAR(36) NOT NULL,
   user_id CHAR(36) NOT NULL,
   entry_date DATE NOT NULL,
+  entry_time CHAR(5) NULL,
   title VARCHAR(180) NOT NULL,
   content TEXT NOT NULL,
   created_at DATETIME(3) NOT NULL,

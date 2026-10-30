@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import ui from '@/components/ui.module.scss';
 import { teamFetch } from '@/components/team/client';
-import { todayInKolkata } from '@/lib/taskRules';
+import { formatDueTime, todayInKolkata } from '@/lib/taskRules';
 import styles from './diary.module.scss';
 
-const EMPTY = { date: '', title: '', content: '' };
+const EMPTY = { when: '', title: '', content: '' };
 
 function prettyDate(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ''));
@@ -22,6 +22,13 @@ function prettyDate(value) {
 
 function shortDate(value) {
   return prettyDate(value).replace(/^\w+,\s*/, '').replace(/\s+\d{4}$/, '');
+}
+
+function whenLabel(entry, full) {
+  const date = full ? prettyDate(entry.date) : shortDate(entry.date);
+  const time = formatDueTime(entry.time);
+  if (!entry.time || time === 'End of day') return date;
+  return `${date}, ${time}`;
 }
 
 export default function DailyDiaryPage() {
@@ -73,7 +80,7 @@ export default function DailyDiaryPage() {
     setNotice('');
     setEditing(entry?.id || '');
     setForm({
-      date: entry?.date || today,
+      when: entry?.date ? `${entry.date}T${entry.time || '00:00'}` : '',
       title: entry?.title || '',
       content: entry?.content || '',
     });
@@ -162,7 +169,7 @@ export default function DailyDiaryPage() {
         <button className={styles.cardBody} type="button" onClick={() => setOpenId(entry.id)}>
           <span className={styles.nameLine}>
             {scope !== 'own' ? <span className={styles.who}>{entry.authorName}{entry.own ? ' · You' : ''}</span> : null}
-            <span className={styles.when}>{shortDate(entry.date)}</span>
+            <span className={styles.when}>{whenLabel(entry)}</span>
           </span>
           <span className={styles.taskLine}><strong>{entry.title}</strong></span>
           {entry.deleted || (scope === 'all' && entry.teamName) ? (
@@ -213,8 +220,8 @@ export default function DailyDiaryPage() {
           </div>
           <div className={styles.form}>
             <div className={styles.split}>
-              <label className={styles.field}>Date
-                <input className={styles.control} type="date" max={today} value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} required />
+              <label className={styles.field}>Date and time
+                <input className={styles.control} type="datetime-local" max={`${today}T23:59`} value={form.when} onChange={(event) => setForm({ ...form, when: event.target.value })} required />
               </label>
               <label className={styles.field}>Title
                 <input className={styles.control} value={form.title} placeholder="What was this day about?" onChange={(event) => setForm({ ...form, title: event.target.value })} maxLength={180} required />
@@ -278,7 +285,7 @@ export default function DailyDiaryPage() {
             <div className={styles.dialogTop}>
               <div className={styles.dialogTitle}>
                 <p className={styles.dialogMeta}>
-                  {prettyDate(selected.date)}
+                  {whenLabel(selected, true)}
                   {selected.deleted ? ' · Deleted' : ''}
                   {scope !== 'own' ? ` · ${selected.authorName}${scope === 'all' && selected.teamName ? ` · ${selected.teamName}` : ''}` : ''}
                 </p>
