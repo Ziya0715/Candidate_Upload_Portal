@@ -221,7 +221,7 @@ export default function DailyDiaryPage() {
           <div className={styles.form}>
             <div className={styles.split}>
               <label className={styles.field}>Date and time
-                <input className={styles.control} type="datetime-local" max={`${today}T23:59`} value={form.when} onChange={(event) => setForm({ ...form, when: event.target.value })} required />
+                <input className={styles.control} type="datetime-local" min={`${today}T00:00`} value={form.when} onChange={(event) => setForm({ ...form, when: event.target.value })} required />
               </label>
               <label className={styles.field}>Title
                 <input className={styles.control} value={form.title} placeholder="What was this day about?" onChange={(event) => setForm({ ...form, title: event.target.value })} maxLength={180} required />

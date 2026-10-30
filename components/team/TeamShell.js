@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import ui from '@/components/ui.module.scss';
 import { ROLE_LABELS, teamFetch } from './client';
+import StatusAlert from './StatusAlert';
 import styles from './team.module.scss';
 
 function Nav({ actor }) {
@@ -62,6 +63,7 @@ export default function TeamShell({ actor, children }) {
         <Nav actor={actor} />
       </Suspense>
       <div className={styles.main}>{children}</div>
+      <StatusAlert actor={actor} />
     </div>
   );
 }

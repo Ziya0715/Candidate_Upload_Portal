@@ -487,6 +487,33 @@
   font-size: 0.85rem;
 }
 
+.alertList {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-left: 4px solid #c4473a;
+    border-radius: 12px;
+    background: #fff8f7;
+  }
+
+  strong {
+    font-size: 0.92rem;
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+}
+
 .dialogCopy {
   margin: 0 0 12px;
   padding: 12px 14px;
